@@ -1,9 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Project</title>
-</head>
-<body>
-    <h1>Hello, World!</h1>
-</body>
-</html>
+import React, { useState } from "react";
+import { ethers } from "ethers";
+
+function App() {
+  const [walletAddress, setWalletAddress] = useState("");
+
+  // 连接钱包
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        setWalletAddress(address);
+        console.log("Connected:", address);
+      } catch (error) {
+        console.error("User denied account access");
+      }
+    } else {
+      console.error("MetaMask not detected");
+    }
+  };
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>Web3 私募、打新、质押平台</h1>
+      {walletAddress ? (
+        <p>Connected Wallet: {walletAddress}</p>
+      ) : (
+        <button onClick={connectWallet}>Connect Wallet</button>
+      )}
+    </div>
+  );
+}
+
+export default App;
